@@ -109,13 +109,9 @@
      :day2 day2
      :rows (for [{:keys [symbol shares day1 day2]} holdings]
              [symbol shares nil
-              (:open day1) (:low day1) (:high day1) (:close day1) (* (:close day1) shares)
+              (:open day1) (:low day1) (:high day1) (:close day1) nil
               nil
-              (:open day2) (:low day2) (:high day2) (:close day2) (* (:close day2) shares)
-              nil
-              (- (:close day2) (:close day1))
-              (* shares (- (:close day2) (:close day1)))
-              (/ (- (:close day2) (:close day1)) (:close day1))])}))
+              (:open day2) (:low day2) (:high day2) (:close day2) nil])}))
 
 (defn create-row-data
   "Massage the data into the form for the template"
@@ -124,21 +120,10 @@
         title (format "Portfolio Status as of %s"
                       (f/unparse (f/formatter "MMMM d, y") day2))
         section-row [nil nil nil (f/unparse (f/formatter "EEEE, M/d") day1)
-                     nil nil nil nil nil (f/unparse (f/formatter "EEEE, M/d") day2)]
-        total-row (let [day1-total (reduce + (map #(nth % 7) rows))
-                        day2-total (reduce + (map #(nth % 13) rows))
-                        change (- day2-total day1-total)
-                        frac-change (/ change day1-total)]
-                    [nil nil nil nil nil nil nil
-                     day1-total
-                     nil nil nil nil nil
-                     day2-total
-                     nil nil
-                     change frac-change])]
+                     nil nil nil nil nil (f/unparse (f/formatter "EEEE, M/d") day2)]]
     {"Portfolio" {0 [[title]]
                   2 [section-row]
-                  4 rows
-                  5 [total-row]}}))
+                  4 rows}}))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Section 4: Apply Template
