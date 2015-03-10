@@ -158,3 +158,31 @@
       get-portfolio-status
       create-row-data
       apply-template))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Extra Section: Make a csv
+
+
+(defn make-simple-rows
+  "Make the basic rows from the holdings data"
+  [holdings]
+  (for [{:keys [symbol shares day1 day2]} holdings]
+    [symbol shares
+     (:open day1) (:low day1) (:high day1) (:close day1) (* (:close day1) shares)
+     (:open day2) (:low day2) (:high day2) (:close day2) (* (:close day2) shares)
+     (- (:close day2) (:close day1))
+     (* shares (- (:close day2) (:close day1)))
+     (/ (- (:close day2) (:close day1)) (:close day1))]))
+
+(defn to-csv
+  "Export a series of rows as CSV"
+  [rows]
+  (let [headers [["" ""
+                  "Day 1" "" "" "" ""
+                  "Day 2" "" "" "" ""
+                  "Change" "" ""]
+                 ["Stock" "Shares"
+                  "Open" "Low" "High" "Close" "Holdings"
+                  "Open" "Low" "High" "Close" "Holdings"
+                  "Share Price" "Total Value" "Percentage"]]]
+    (spit "/tmp/portfolio.csv" (cl-format nil "~{~{~a~^,~}~%~}" (concat headers rows)))))
