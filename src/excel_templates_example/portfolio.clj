@@ -88,14 +88,14 @@
                         parse-double parse-int parse-double])
         (stock-to-map sym))))
 
-(defn get-portfolio-status
-  "Get the share data for our portfolio for the past two market days"
+(defn get-portfolio-history
+  "Get the history of the portfolio since the beginning of the year."
   [portfolio]
   (let [end (org.joda.time.LocalDate.)
-        start (.minusDays end 7)]
-    (for [{:keys [symbol shares]} portfolio
-          :let [[day2 day1] (get-yahoo-stock-data symbol start end "d")]]
-      {:symbol symbol :shares shares :day1 day1 :day2 day2})))
+        start (org.joda.time.LocalDate. (.getYear end) 1 1)]
+    (for [{:keys [symbol name shares]} portfolio
+          :let [history (get-yahoo-stock-data symbol start end "d")]]
+      {:symbol symbol :name name :shares shares :history history})))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Section 3: Organize output to be the way we want it in
@@ -104,26 +104,44 @@
 (defn holdings-rows
   "Get the share data for our portfolio for the past two market days"
   [holdings]
-  (let [[day1 day2] (->> holdings first ((juxt :day1 :day2)) (map :date))]
+  (let [[day2 day1] (->> holdings first :history (map :date))]
     {:day1 day1
      :day2 day2
-     :rows (for [{:keys [symbol shares day1 day2]} holdings]
+     :rows (for [{:keys [symbol shares history]} holdings
+                 :let [[day2 day1] history]]
              [symbol shares nil
               (:open day1) (:low day1) (:high day1) (:close day1) nil
               nil
               (:open day2) (:low day2) (:high day2) (:close day2) nil])}))
 
-(defn create-row-data
-  "Massage the data into the form for the template"
+(defn last-two-days
+  "Return the row replacements for first sheet that reflects the previous day's change over
+  the day before that for the entire portfolio"
   [holdings]
   (let [{:keys [day1 day2 rows]} (holdings-rows holdings)
         title (format "Portfolio Status as of %s"
                       (f/unparse (f/formatter "MMMM d, y") day2))
         section-row [nil nil nil (f/unparse (f/formatter "EEEE, M/d") day1)
                      nil nil nil nil nil (f/unparse (f/formatter "EEEE, M/d") day2)]]
-    {"Portfolio" {0 [[title]]
-                  2 [section-row]
-                  4 rows}}))
+    {0 [[title]]
+     2 [section-row]
+     4 rows}))
+
+(defn history-per-stock
+  "Build the sheets for the YTD history of each stock in the portfolio"
+  [holdings]
+  (for [{:keys [symbol name shares history]} holdings]
+    {:sheet-name symbol
+     0 [[(str "YTD Info for " name)]]
+     1 [[symbol nil shares]]
+     4 (for [{:keys [date open close]} (reverse history)]
+         [(apply #(java.util.Date. (- %1 1900) (dec %2) %3) (get-year-month-day date)) open close])}))
+
+(defn create-row-data
+  "Massage the data into the form for the template"
+  [holdings]
+  {"Portfolio" (last-two-days holdings)
+   "PerStock" (history-per-stock holdings)})
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Section 4: Apply Template
@@ -140,7 +158,7 @@
   "Make an excel report for our portfolio"
   []
   (-> my-portfolio
-      get-portfolio-status
+      get-portfolio-history
       create-row-data
       apply-template))
 
