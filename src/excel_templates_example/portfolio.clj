@@ -16,15 +16,15 @@
 ;;; Section 1: Define my portfolio
 
 (def my-portfolio
-  [{:symbol "GOOG", :shares 275}
-   {:symbol "AAPL", :shares 350}
-   {:symbol "MSFT", :shares 2800}
-   {:symbol "AMZN", :shares 576}
-   {:symbol "AMAT", :shares 4422}
-   {:symbol "MON",  :shares 1152}
-   {:symbol "XOM",  :shares 750}
-   {:symbol "RTN",  :shares 1800}
-   {:symbol "WFC",  :shares 900}])
+  [{:symbol "AAPL", :name "Apple"    :shares 350}
+   {:symbol "AKAM", :name "Akamai"   :shares 275}
+   {:symbol "AMZN", :name "Amazon"   :shares 576}
+   {:symbol "IBM",  :name "IBM"      :shares 422}
+   {:symbol "MON",  :name "Monsanto" :shares 1152}
+   {:symbol "NFLX", :name "Netflix"  :shares 750}
+   {:symbol "SPLS", :name "Staples"  :shares 3600}
+   {:symbol "TDC",  :name "Teradata" :shares 1800}
+   {:symbol "WMT",  :name "Wal-mart" :shares 900}])
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Section 2: Retrieve data from Yahoo Finance
