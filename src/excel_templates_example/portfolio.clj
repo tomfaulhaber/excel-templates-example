@@ -134,8 +134,8 @@
     {:sheet-name symbol
      0 [[(str "YTD Info for " name)]]
      1 [[symbol nil shares]]
-     4 (for [{:keys [date open close]} (reverse history)]
-         [(apply #(java.util.Date. (- %1 1900) (dec %2) %3) (get-year-month-day date)) open close])}))
+     [4 5] (for [{:keys [date open close]} (reverse history)]
+             [(apply #(java.util.Date. (- %1 1900) (dec %2) %3) (get-year-month-day date)) open close])}))
 
 (defn create-row-data
   "Massage the data into the form for the template"
