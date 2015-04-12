@@ -169,7 +169,8 @@
 (defn make-simple-rows
   "Make the basic rows from the holdings data"
   [holdings]
-  (for [{:keys [symbol shares day1 day2]} holdings]
+  (for [{:keys [symbol shares history]} holdings
+        :let [[day1 day2] history]]
     [symbol shares
      (:open day1) (:low day1) (:high day1) (:close day1) (* (:close day1) shares)
      (:open day2) (:low day2) (:high day2) (:close day2) (* (:close day2) shares)
