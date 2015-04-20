@@ -180,3 +180,29 @@
                   "Open" "Low" "High" "Close" "Holdings"
                   "Share Price" "Total Value" "Percentage"]]]
     (spit "/tmp/portfolio.csv" (cl-format nil "~{~{~a~^,~}~%~}" (concat headers rows)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Extra Section: load the csvs from saved data files
+;;; in case the internet doesn't work
+
+
+(defn get-saved-yahoo-stock-data
+  "Get the saved yahoo finance data for a certain period from files. Returns a seq of maps
+   with the keys [:symbol :date :open :high :low :close :volume :adj-close]"
+  [sym]
+  (let [sdata (slurp (str "saved-portfolio/" sym ".csv"))]
+    (-> sdata
+        body-as-csv
+        rest
+        (convert-items [parse-yahoo-date parse-double parse-double parse-double
+                        parse-double parse-int parse-double])
+        (stock-to-map sym))))
+
+(defn get-saved-portfolio-history
+  "Get the history of the portfolio since the beginning of the year."
+  [portfolio]
+  (let [end (org.joda.time.LocalDate.)
+        start (org.joda.time.LocalDate. (.getYear end) 1 1)]
+    (for [{:keys [symbol name shares]} portfolio
+          :let [history (get-saved-yahoo-stock-data symbol)]]
+      {:symbol symbol :name name :shares shares :history history})))
