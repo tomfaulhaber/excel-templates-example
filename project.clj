@@ -3,7 +3,8 @@
   :url "https://github.com/tomfaulhaber/excel-templates-example"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[clj-http "1.0.1"]
+  :dependencies [[clj-http "2.1.0"]
                  [clj-time "0.9.0"]
                  [com.infolace/excel-templates "0.3.1"]
-                 [org.clojure/clojure "1.6.0"]])
+                 [org.clojure/clojure "1.8.0"]]
+  :main excel-templates-example.portfolio)
