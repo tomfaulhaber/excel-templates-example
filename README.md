@@ -17,7 +17,7 @@ It is intended as a usage example for the [excel-templates](https://github.com/t
 
 ## License
 
-Copyright © 2015 Tom Faulhaber
+Copyright © 2015-6 Tom Faulhaber
 
 Distributed under the Eclipse Public License either version 1.0 or (at
 your option) any later version.
